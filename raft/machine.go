@@ -3,16 +3,18 @@ package raft
 import (
 	"context"
 	"errors"
-	"github.com/hashicorp/raft"
-	"github.com/lapla-cogito/kabosu/kvs"
 	"io"
+
+	"kabosu/lib"
+
+	"github.com/hashicorp/raft"
 )
 
 type Machine struct {
-	kvs kvs.Store
+	kvs lib.Store
 }
 
-func NewMachine(store kvs.Store) *Machine {
+func NewMachine(store lib.Store) *Machine {
 	return &Machine{store}
 }
 

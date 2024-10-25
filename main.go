@@ -10,11 +10,12 @@ import (
 	"strings"
 	"time"
 
+	"kabosu/lib"
+	"kabosu/raft"
+
 	hraft "github.com/hashicorp/raft"
 	raftboltdb "github.com/hashicorp/raft-boltdb"
 	"github.com/joho/godotenv"
-	"github.com/lapla-cogito/kabosu/kvs"
-	"github.com/lapla-cogito/kabosu/raft"
 )
 
 type Config struct {
@@ -79,7 +80,7 @@ func main() {
 
 	validateConfig(config)
 
-	machine := raft.NewMachine(kvs.NewMemoryStore())
+	machine := raft.NewMachine(lib.NewMemoryStore())
 	r, sdb, err := newRaft(config.DataDir, config.ServerID, config.RaftAddr, machine, config.InitialPeers)
 	if err != nil {
 		log.Fatalf("Failed to create new raft: %v", err)
