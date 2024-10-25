@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"kabosu/kvs"
 	"kabosu/lib"
 	"kabosu/raft"
 
@@ -80,10 +81,16 @@ func main() {
 
 	validateConfig(config)
 
-	machine := raft.NewMachine(lib.NewMemoryStore())
+	mem := lib.NewMemoryStore()
+	machine := raft.NewMachine(mem)
 	r, sdb, err := newRaft(config.DataDir, config.ServerID, config.RaftAddr, machine, config.InitialPeers)
 	if err != nil {
 		log.Fatalf("Failed to create new raft: %v", err)
+	}
+
+	kvs := kvs.NewKvs(hraft.ServerID(config.ServerID), r, mem, sdb)
+	if err := kvs.Serve(config.RedisAddr); err != nil {
+		log.Fatalf("Failed to start kvs: %v", err)
 	}
 }
 
